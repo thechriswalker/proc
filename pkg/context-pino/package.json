@@ -18,7 +18,8 @@
   "dependencies": {
     "@proc/context": "^0.1.28",
     "@types/pino": "^5.20.0",
-    "pino": "^5.12.6"
+    "pino": "^5.12.6",
+    "pino-pretty": "^3.2.1"
   },
   "scripts": {
     "prepublishOnly": "yarn run build",

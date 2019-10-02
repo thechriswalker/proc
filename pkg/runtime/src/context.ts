@@ -25,7 +25,15 @@ function createParentContext<Ctx extends BaseContext = BaseContext>(
       vcs: config.getString("VCS_COMMIT"),
       env: config.getString("APP_ENV")
     },
-    level: config.getString("LOG_LEVEL", "trace")
+    level: config.getString("LOG_LEVEL", "trace"),
+    prettyPrint: config.getBoolean("LOG_PRETTY", process.stdout.isTTY)
+      ? {
+          levelFirst: true,
+          //@ts-ignore
+          ignore: "ctx,env,vcs",
+          timeTransOnly: true
+        }
+      : false
   });
   const initialEnhancer = (ctx: Context): BaseContext =>
     Object.defineProperties(ctx, {
