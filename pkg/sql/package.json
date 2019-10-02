@@ -1,6 +1,6 @@
 {
   "name": "@proc/sql",
-  "version": "0.1.25",
+  "version": "0.1.27",
   "description": "SQL tagged template string",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",

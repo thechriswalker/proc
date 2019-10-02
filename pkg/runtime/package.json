@@ -1,6 +1,6 @@
 {
   "name": "@proc/runtime",
-  "version": "0.1.25",
+  "version": "0.1.27",
   "description": "An koa web-app runtime for @proc/context",
   "main": "dist/index",
   "types": "dist/index.d.ts",
@@ -15,10 +15,10 @@
     "build": "tsc"
   },
   "dependencies": {
-    "@proc/configuration": "^0.1.25",
-    "@proc/context": "^0.1.25",
-    "@proc/context-koa": "^0.1.25",
-    "@proc/context-pino": "^0.1.25",
+    "@proc/configuration": "^0.1.27",
+    "@proc/context": "^0.1.27",
+    "@proc/context-koa": "^0.1.27",
+    "@proc/context-pino": "^0.1.27",
     "async-exit-hook": "^2.0.1",
     "cuid": "^2.1.1",
     "dotenv": "^8.0.0",

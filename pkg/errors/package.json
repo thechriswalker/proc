@@ -1,7 +1,7 @@
 {
   "name": "@proc/errors",
   "description": "Generic errors, specific codes",
-  "version": "0.1.25",
+  "version": "0.1.27",
   "main": "dist/index",
   "types": "dist/index.d.ts",
   "files": [
