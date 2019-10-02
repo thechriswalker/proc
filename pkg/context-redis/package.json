@@ -1,6 +1,6 @@
 {
   "name": "@proc/context-redis",
-  "version": "0.1.27",
+  "version": "0.1.28",
   "description": "Redis Connection for contexts",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -14,7 +14,7 @@
     "ioredis": "^4.9.5"
   },
   "devDependencies": {
-    "@proc/context": "^0.1.27",
+    "@proc/context": "^0.1.28",
     "@types/jest": "^24.0.13",
     "jest": "^24.8.0",
     "ts-jest": "^24.0.2",
