@@ -31,7 +31,8 @@ function createParentContext<Ctx extends BaseContext = BaseContext>(
           levelFirst: true,
           //@ts-ignore
           ignore: "ctx,env,vcs",
-          timeTransOnly: true
+          //@ts-ignore
+          translateTime: "HH:MM:ss.l"
         }
       : false
   });
