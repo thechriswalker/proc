@@ -1,6 +1,6 @@
 {
   "name": "@proc/runtime",
-  "version": "0.1.29",
+  "version": "0.1.30",
   "description": "An koa web-app runtime for @proc/context",
   "main": "dist/index",
   "types": "dist/index.d.ts",
