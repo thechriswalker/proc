@@ -1,0 +1,26 @@
+{
+  "name": "@proc/context-koa",
+  "version": "0.1.25",
+  "description": "Adds a @proc/context to koa via a middleware",
+  "main": "dist/index",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist/**/*"
+  ],
+  "author": "Chris Walker <chris@thechriswalker.net",
+  "license": "MIT",
+  "scripts": {
+    "prepublishOnly": "yarn run build",
+    "test": "jest --config ../../jest.config.js --passWithNoTests",
+    "build": "tsc"
+  },
+  "dependencies": {
+    "@proc/context": "^0.1.25"
+  },
+  "devDependencies": {
+    "@types/jest": "^24.0.13",
+    "jest": "^24.8.0",
+    "ts-jest": "^24.0.2",
+    "typescript": "^3.5.1"
+  }
+}

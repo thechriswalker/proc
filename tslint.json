@@ -1,0 +1,23 @@
+{
+  "defaultSeverity": "error",
+  "extends": ["tslint:recommended"],
+  "rulesDirectory": ["tslint-plugin-prettier"],
+  "jsRules": {},
+  "rules": {
+    "prettier": true,
+    "triple-equals": true,
+    "quotemark": false,
+    "trailing-comma": false,
+    "interface-over-type-literal": false,
+    "no-namespace": false,
+    "interface-name": false,
+    "array-type": [true, "generic"],
+    "object-literal-sort-keys": false,
+    "prefer-for-of": false,
+    "no-implicit-dependencies": [true, "dev"],
+    "semicolon": [true, "always", "ignore-bound-class-methods"],
+    "max-classes-per-file": false,
+    "arrow-parens": false,
+    "object-literal-key-quotes": [true, "as-needed"]
+  }
+}

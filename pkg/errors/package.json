@@ -1,0 +1,23 @@
+{
+  "name": "@proc/errors",
+  "description": "Generic errors, specific codes",
+  "version": "0.1.25",
+  "main": "dist/index",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist/**/*"
+  ],
+  "author": "Chris Walker <chris@thechriswalker.net>",
+  "license": "MIT",
+  "scripts": {
+    "prepublishOnly": "yarn run build",
+    "test": "jest --config ../../jest.config.js --passWithNoTests",
+    "build": "tsc"
+  },
+  "devDependencies": {
+    "@types/jest": "^24.0.13",
+    "jest": "^24.8.0",
+    "ts-jest": "^24.0.2",
+    "typescript": "^3.5.1"
+  }
+}

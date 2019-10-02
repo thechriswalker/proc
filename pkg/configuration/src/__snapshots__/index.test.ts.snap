@@ -1,0 +1,37 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Configuration Boolean Values 1`] = `"Configuration expected a boolean value at key: \\"invalid\\", got: \\"is this truthy?\\""`;
+
+exports[`Configuration Boolean Values 2`] = `"Configuration expected a boolean value at key: \\"invalid\\", got: \\"is this truthy?\\""`;
+
+exports[`Configuration Boolean Values 3`] = `"Configuration missing (required) boolean value at key: \\"missing\\""`;
+
+exports[`Configuration Float Values 1`] = `"Configuration expected a float value at key: \\"empty\\", got: \\"\\""`;
+
+exports[`Configuration Float Values 2`] = `"Configuration expected a float value at key: \\"empty\\", got: \\"\\""`;
+
+exports[`Configuration Float Values 3`] = `"Configuration expected a float value at key: \\"invalid\\", got: \\"not a float\\""`;
+
+exports[`Configuration Float Values 4`] = `"Configuration expected a float value at key: \\"invalid\\", got: \\"not a float\\""`;
+
+exports[`Configuration Float Values 5`] = `"Configuration missing (required) float value at key: \\"missing\\""`;
+
+exports[`Configuration Integer Values 1`] = `"Configuration expected a integer value at key: \\"too_big\\", got: \\"90071992547409910\\""`;
+
+exports[`Configuration Integer Values 2`] = `"Configuration expected a integer value at key: \\"too_big\\", got: \\"90071992547409910\\""`;
+
+exports[`Configuration Integer Values 3`] = `"Configuration expected a integer value at key: \\"empty\\", got: \\"\\""`;
+
+exports[`Configuration Integer Values 4`] = `"Configuration expected a integer value at key: \\"empty\\", got: \\"\\""`;
+
+exports[`Configuration Integer Values 5`] = `"Configuration expected a integer value at key: \\"float\\", got: \\"1.23\\""`;
+
+exports[`Configuration Integer Values 6`] = `"Configuration expected a integer value at key: \\"float\\", got: \\"1.23\\""`;
+
+exports[`Configuration Integer Values 7`] = `"Configuration missing (required) integer value at key: \\"missing\\""`;
+
+exports[`Configuration Integer Values 8`] = `"Configuration expected a integer value at key: \\"invalid\\", got: \\"invalid\\""`;
+
+exports[`Configuration Integer Values 9`] = `"Configuration expected a integer value at key: \\"invalid\\", got: \\"invalid\\""`;
+
+exports[`Configuration String Values 1`] = `"Configuration missing (required) string value at key: \\"missing\\""`;

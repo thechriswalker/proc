@@ -1,0 +1,23 @@
+{
+  "name": "@proc/configuration",
+  "version": "0.1.25",
+  "description": "Configuration object.",
+  "main": "dist/index",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist/**/*"
+  ],
+  "author": "Chris Walker <chris@thechriswalker.net",
+  "license": "MIT",
+  "scripts": {
+    "prepublishOnly": "yarn run build",
+    "test": "jest --config ../../jest.config.js",
+    "build": "tsc"
+  },
+  "devDependencies": {
+    "@types/jest": "^24.0.13",
+    "jest": "^24.8.0",
+    "ts-jest": "^24.0.2",
+    "typescript": "^3.5.1"
+  }
+}

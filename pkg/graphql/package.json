@@ -1,0 +1,30 @@
+{
+  "name": "@proc/graphql",
+  "description": "GraphQL Server, Tools and Scalars",
+  "version": "0.1.25",
+  "main": "dist/index",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist/**/*"
+  ],
+  "author": "Chris Walker <chris@thechriswalker.net>",
+  "license": "MIT",
+  "scripts": {
+    "prepublishOnly": "yarn run build",
+    "test": "jest --config ../../jest.config.js --passWithNoTests",
+    "build": "tsc"
+  },
+  "dependencies": {
+    "apollo-server-koa": "^2.6.1",
+    "graphql": "^14.3.1",
+    "koa": "^2.7.0",
+    "koa-mount": "^4.0.0"
+  },
+  "devDependencies": {
+    "@types/jest": "^24.0.13",
+    "@types/koa-mount": "^4.0.0",
+    "jest": "^24.8.0",
+    "ts-jest": "^24.0.2",
+    "typescript": "^3.5.1"
+  }
+}

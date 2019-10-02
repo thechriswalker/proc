@@ -1,0 +1,33 @@
+{
+  "name": "@proc/runtime",
+  "version": "0.1.25",
+  "description": "An koa web-app runtime for @proc/context",
+  "main": "dist/index",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist/**/*"
+  ],
+  "author": "Chris Walker <chris@thechriswalker.net>",
+  "license": "MIT",
+  "scripts": {
+    "prepublishOnly": "yarn run build",
+    "test": "jest --config ../../jest.config.js --passWithNoTests",
+    "build": "tsc"
+  },
+  "dependencies": {
+    "@proc/configuration": "^0.1.25",
+    "@proc/context": "^0.1.25",
+    "@proc/context-koa": "^0.1.25",
+    "@proc/context-pino": "^0.1.25",
+    "async-exit-hook": "^2.0.1",
+    "cuid": "^2.1.1",
+    "dotenv": "^8.0.0",
+    "koa": "^2.5.2"
+  },
+  "devDependencies": {
+    "@types/dotenv": "^6.1.1",
+    "@types/koa": "^2.0.46",
+    "@types/node": "^12.0.4",
+    "typescript": "^3.5.1"
+  }
+}
