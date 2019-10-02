@@ -24,5 +24,8 @@
     "prepublishOnly": "yarn run build",
     "test": "jest --config ../../jest.config.js --passWithNoTests",
     "build": "tsc"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }
