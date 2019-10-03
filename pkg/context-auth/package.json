@@ -1,6 +1,6 @@
 {
   "name": "@proc/context-auth",
-  "version": "0.1.28",
+  "version": "0.1.31",
   "description": "Authentication and authorization module for @proc/context",
   "main": "dist/index",
   "types": "dist/index.d.ts",
