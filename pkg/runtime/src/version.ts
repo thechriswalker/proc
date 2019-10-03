@@ -4,7 +4,6 @@ import { AppVersionInfo } from "./config";
 export function loadVersionInfo(vcs: boolean = false): AppVersionInfo {
   interface Pjson {
     name: string;
-    version: string;
   }
   const info: AppVersionInfo = {
     name: "app",
@@ -14,32 +13,24 @@ export function loadVersionInfo(vcs: boolean = false): AppVersionInfo {
     dirty: true
   };
   try {
-    const { name, version } = require(process.cwd() + "/package.json") as Pjson;
+    const { name } = require(process.cwd() + "/package.json") as Pjson;
     info.name = name;
-    info.version = version;
-  } catch (e) {
-    // ignore
-  }
+  } catch {}
 
   try {
     info.commit = shell("git rev-parse HEAD");
-  } catch (e) {
-    // ignore
-  }
+  } catch {}
 
   try {
-    info.dirty = shell("git describe --always --dirty").endsWith("-dirty");
-  } catch (e) {
-    // ignore
-  }
+    info.version = shell("git describe --tags --always --dirty");
+    info.dirty = info.version.endsWith("-dirty");
+  } catch {}
 
   try {
     info.buildDate = new Date(
       shell("git log -n1 --format=%aI HEAD")
     ).toISOString();
-  } catch (e) {
-    // ignore
-  }
+  } catch {}
 
   return info;
 }

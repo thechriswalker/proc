@@ -6,10 +6,12 @@ import { Configuration } from "@proc/configuration";
 import { Context, ContextEnhancer, createContext } from "@proc/context";
 import { createLogger, Logger } from "@proc/context-pino";
 import cuid from "cuid";
+import { Authn } from "@proc/context-auth";
 
 export interface BaseContext extends Context {
   log: Logger;
   config: Configuration;
+  authn: Authn;
 }
 
 export type BaseContextEnhancer<Ctx extends BaseContext> = (
@@ -36,8 +38,9 @@ function createParentContext<Ctx extends BaseContext = BaseContext>(
         }
       : false
   });
-  const initialEnhancer = (ctx: Context): BaseContext =>
-    Object.defineProperties(ctx, {
+  const initialEnhancer = (ctx: Context): BaseContext => {
+    let authn: Authn;
+    return Object.defineProperties(ctx, {
       log: {
         enumerable: true,
         get: () => getLogger(ctx)
@@ -45,8 +48,26 @@ function createParentContext<Ctx extends BaseContext = BaseContext>(
       config: {
         enumerable: true,
         value: config
+      },
+      authn: {
+        enumerable: true,
+        get: () => {
+          if (!authn) {
+            // if you don't use the authn middleware,
+            // don't access the authn property!
+            throw new Error("Authn not present!");
+          }
+          return authn;
+        },
+        set: (given: Authn) => {
+          if (authn) {
+            throw new Error("Authn already set!");
+          }
+          authn = given;
+        }
       }
     });
+  };
   const finalEnhancer = enhancer
     ? (ctx: Context): Ctx => enhancer(initialEnhancer(ctx))
     : // We cannot get typescript to check this. If the consumer of this
