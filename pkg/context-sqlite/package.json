@@ -1,6 +1,6 @@
 {
   "name": "@proc/context-sqlite",
-  "version": "0.1.28",
+  "version": "0.1.32",
   "description": "SQLite Connection for contexts",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -10,11 +10,11 @@
   "author": "Chris Walker <chris@thechriswalker.net>",
   "license": "MIT",
   "dependencies": {
-    "@proc/context-db": "^0.1.28",
+    "@proc/context-db": "^0.1.32",
     "sqlite3": "4.1.0"
   },
   "devDependencies": {
-    "@proc/context": "^0.1.28",
+    "@proc/context": "^0.1.32",
     "@types/jest": "^24.0.13",
     "@types/sqlite3": "^3.1.5",
     "jest": "^24.8.0",
