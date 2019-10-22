@@ -1,6 +1,6 @@
 {
   "name": "@proc/context-postgres",
-  "version": "0.1.32",
+  "version": "0.1.35",
   "description": "Postgres Connection for contexts",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -10,11 +10,11 @@
   "author": "Chris Walker <chris@thechriswalker.net>",
   "license": "MIT",
   "dependencies": {
-    "@proc/context-db": "^0.1.32",
+    "@proc/context-db": "^0.1.35",
     "pg": "^7.11.0"
   },
   "devDependencies": {
-    "@proc/context": "^0.1.32",
+    "@proc/context": "^0.1.35",
     "@types/jest": "^24.0.19",
     "@types/pg": "^7.4.14",
     "jest": "^24.8.0",

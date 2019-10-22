@@ -1,6 +1,6 @@
 {
   "name": "@proc/context-koa",
-  "version": "0.1.32",
+  "version": "0.1.35",
   "description": "Adds a @proc/context to koa via a middleware",
   "main": "dist/index",
   "types": "dist/index.d.ts",
@@ -15,7 +15,7 @@
     "build": "tsc"
   },
   "dependencies": {
-    "@proc/context": "^0.1.32"
+    "@proc/context": "^0.1.35"
   },
   "devDependencies": {
     "@types/jest": "^24.0.19",

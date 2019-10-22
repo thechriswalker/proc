@@ -1,6 +1,6 @@
 {
   "name": "@proc/context-pino",
-  "version": "0.1.34",
+  "version": "0.1.35",
   "description": "A Logger property for contexts",
   "main": "dist/index",
   "types": "dist/index.d.ts",
@@ -16,7 +16,7 @@
     "typescript": "^3.6.4"
   },
   "dependencies": {
-    "@proc/context": "^0.1.32",
+    "@proc/context": "^0.1.35",
     "@types/pino": "^5.20.0",
     "pino": "^5.13.5",
     "pino-pretty": "^3.2.2"
