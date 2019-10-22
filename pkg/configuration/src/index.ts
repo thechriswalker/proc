@@ -48,7 +48,7 @@ export function createConfiguration(src: {
 
   // the string one doesn't need memoization
   const getString: MaybeGetter<string> = (key: string) => ({
-    value: expandValue(key, source[key]),
+    value: expandValue(source, key),
     raw: source[key]
   });
 
@@ -56,7 +56,7 @@ export function createConfiguration(src: {
   const intMemo: { [k: string]: ValueAndRaw<number> } = {};
   const getInt: MaybeGetter<number> = (key: string) => {
     if (key in intMemo === false) {
-      const raw = expandValue(key, source[key]);
+      const raw = expandValue(source, key);
       // Yes, we use parseFloat because parseInt coerce's to integer when a valid
       // float is in the string. This way we keep the precision and then check whether
       // the float is actually an integer (and within safe range). Which is stricter
@@ -78,7 +78,7 @@ export function createConfiguration(src: {
   const floatMemo: { [k: string]: ValueAndRaw<number> } = {};
   const getFloat: MaybeGetter<number> = (key: string) => {
     if (key in floatMemo === false) {
-      const raw = expandValue(key, source[key]);
+      const raw = expandValue(source, key);
       const n = parseFloat(raw);
       // Number.isNaN because NaN is the only value we dissallow, infinity is fine
       floatMemo[key] = {
@@ -93,7 +93,7 @@ export function createConfiguration(src: {
   const boolMemo: { [k: string]: ValueAndRaw<boolean> } = {};
   const getBool: MaybeGetter<boolean> = (key: string) => {
     if (key in boolMemo === false) {
-      const raw = expandValue(key, source[key]);
+      const raw = expandValue(source, key);
       boolMemo[key] = {
         value: validBooleanStrings[raw] === true,
         raw
@@ -162,15 +162,19 @@ export class InvalidBase64ConfigurationError extends Error {
 // this handles transparent file and base64 encoded values.
 // this needs a cache.
 const valueCache = new Map<string, string>();
-function expandValue(k: string, v: string): string {
-  if (valueCache.has(k)) {
-    return valueCache.get(k)!;
+function expandValue(src: { [k: string]: string }, key: string): string {
+  if (valueCache.has(key)) {
+    return valueCache.get(key)!;
+  }
+  const v = src[key];
+  if (!v) {
+    return "";
   }
   // linked file
   if (v.startsWith("file://")) {
     try {
       const content = readFileSync(v.slice(7), "utf8");
-      valueCache.set(k, content);
+      valueCache.set(key, content);
       return content;
     } catch (e) {
       throw new InvalidLinkedFileConfigurationError(v, e);
@@ -180,10 +184,10 @@ function expandValue(k: string, v: string): string {
   if (v.startsWith("base64://")) {
     try {
       const content = Buffer.from(v.slice(9), "base64").toString("utf8");
-      valueCache.set(k, content);
+      valueCache.set(key, content);
       return content;
     } catch {
-      throw new InvalidBase64ConfigurationError(k);
+      throw new InvalidBase64ConfigurationError(key);
     }
   }
   return v;
