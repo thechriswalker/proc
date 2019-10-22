@@ -1,9 +1,6 @@
 import pino from "pino";
-import * as stream from "stream";
 
 import { Context, createProperty, PropertyLoader } from "@proc/context";
-
-const noEmitter = (): boolean => false;
 
 export type Logger = pino.Logger & {
   bind: (obj?: { [key: string]: any }) => Logger;

@@ -61,7 +61,7 @@ export function createConfiguration(src: {
       // float is in the string. This way we keep the precision and then check whether
       // the float is actually an integer (and within safe range). Which is stricter
       // than parseInt(raw, 10);
-      const n = parseFloat(raw);
+      const n = raw === undefined ? NaN : parseFloat(raw);
       const isInt =
         Number.isInteger(n) &&
         n <= Number.MAX_SAFE_INTEGER &&
@@ -79,7 +79,7 @@ export function createConfiguration(src: {
   const getFloat: MaybeGetter<number> = (key: string) => {
     if (key in floatMemo === false) {
       const raw = expandValue(source, key);
-      const n = parseFloat(raw);
+      const n = raw === undefined ? NaN : parseFloat(raw);
       // Number.isNaN because NaN is the only value we dissallow, infinity is fine
       floatMemo[key] = {
         value: Number.isNaN(n) ? undefined : n,
@@ -95,7 +95,7 @@ export function createConfiguration(src: {
     if (key in boolMemo === false) {
       const raw = expandValue(source, key);
       boolMemo[key] = {
-        value: validBooleanStrings[raw] === true,
+        value: raw === undefined ? undefined : validBooleanStrings[raw],
         raw
       };
     }
@@ -162,13 +162,16 @@ export class InvalidBase64ConfigurationError extends Error {
 // this handles transparent file and base64 encoded values.
 // this needs a cache.
 const valueCache = new Map<string, string>();
-function expandValue(src: { [k: string]: string }, key: string): string {
+function expandValue(
+  src: { [k: string]: string },
+  key: string
+): string | undefined {
   if (valueCache.has(key)) {
     return valueCache.get(key)!;
   }
   const v = src[key];
-  if (!v) {
-    return "";
+  if (v === undefined) {
+    return undefined;
   }
   // linked file
   if (v.startsWith("file://")) {

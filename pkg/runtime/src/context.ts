@@ -4,9 +4,9 @@
  */
 import { Configuration } from "@proc/configuration";
 import { Context, ContextEnhancer, createContext } from "@proc/context";
+import { Authn } from "@proc/context-auth";
 import { createLogger, Logger } from "@proc/context-pino";
 import cuid from "cuid";
-import { Authn } from "@proc/context-auth";
 
 export interface BaseContext extends Context {
   log: Logger;
@@ -31,9 +31,9 @@ function createParentContext<Ctx extends BaseContext = BaseContext>(
     prettyPrint: config.getBoolean("LOG_PRETTY", process.stdout.isTTY)
       ? {
           levelFirst: true,
-          //@ts-ignore
+          // @ts-ignore
           ignore: "ctx,env,vcs",
-          //@ts-ignore
+          // @ts-ignore
           translateTime: "HH:MM:ss.l"
         }
       : false
