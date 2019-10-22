@@ -215,7 +215,7 @@ export function createLifecycleProperty<T, C extends Context = Context>(
   };
   const unloader: Unloader<T, C> = async (ctx, loaded) => {
     await unload(ctx, loaded);
-    if (ctx.isTopLevelContext) {
+    if (ctx.isTopLevelContext && hasBeenInitialised) {
       await destructor(ctx);
     }
   };

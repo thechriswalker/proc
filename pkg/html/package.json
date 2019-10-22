@@ -15,17 +15,17 @@
     "build": "tsc"
   },
   "dependencies": {
-    "@types/react": "16.9.4",
-    "@types/react-dom": "16.9.1",
+    "@types/react": "16.9.9",
+    "@types/react-dom": "16.9.2",
     "hyperx": "^2.5.4",
-    "react": "^16.8.6",
-    "react-dom": "^16.8.6"
+    "react": "^16.10.2",
+    "react-dom": "^16.10.2"
   },
   "devDependencies": {
-    "@types/jest": "^24.0.13",
+    "@types/jest": "^24.0.19",
     "jest": "^24.8.0",
     "ts-jest": "^24.0.2",
-    "typescript": "^3.5.1"
+    "typescript": "^3.6.4"
   },
   "publishConfig": {
     "access": "public"

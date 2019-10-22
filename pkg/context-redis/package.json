@@ -15,10 +15,10 @@
   },
   "devDependencies": {
     "@proc/context": "^0.1.32",
-    "@types/jest": "^24.0.13",
+    "@types/jest": "^24.0.19",
     "jest": "^24.8.0",
     "ts-jest": "^24.0.2",
-    "typescript": "^3.5.1"
+    "typescript": "^3.6.4"
   },
   "scripts": {
     "prepublishOnly": "yarn run build",
