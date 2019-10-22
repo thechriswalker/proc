@@ -1,3 +1,5 @@
+import { readFileSync } from "fs";
+
 /**
  * This holds the environment gathered configuration
  */
@@ -46,7 +48,7 @@ export function createConfiguration(src: {
 
   // the string one doesn't need memoization
   const getString: MaybeGetter<string> = (key: string) => ({
-    value: source[key],
+    value: expandValue(key, source[key]),
     raw: source[key]
   });
 
@@ -54,7 +56,7 @@ export function createConfiguration(src: {
   const intMemo: { [k: string]: ValueAndRaw<number> } = {};
   const getInt: MaybeGetter<number> = (key: string) => {
     if (key in intMemo === false) {
-      const raw = source[key];
+      const raw = expandValue(key, source[key]);
       // Yes, we use parseFloat because parseInt coerce's to integer when a valid
       // float is in the string. This way we keep the precision and then check whether
       // the float is actually an integer (and within safe range). Which is stricter
@@ -76,7 +78,7 @@ export function createConfiguration(src: {
   const floatMemo: { [k: string]: ValueAndRaw<number> } = {};
   const getFloat: MaybeGetter<number> = (key: string) => {
     if (key in floatMemo === false) {
-      const raw = source[key];
+      const raw = expandValue(key, source[key]);
       const n = parseFloat(raw);
       // Number.isNaN because NaN is the only value we dissallow, infinity is fine
       floatMemo[key] = {
@@ -91,9 +93,9 @@ export function createConfiguration(src: {
   const boolMemo: { [k: string]: ValueAndRaw<boolean> } = {};
   const getBool: MaybeGetter<boolean> = (key: string) => {
     if (key in boolMemo === false) {
-      const raw = source[key];
+      const raw = expandValue(key, source[key]);
       boolMemo[key] = {
-        value: validBooleanStrings[raw],
+        value: validBooleanStrings[raw] === true,
         raw
       };
     }
@@ -143,4 +145,46 @@ export class MistypedConfigurationKeyError extends Error {
     );
     this.name = "MistypedConfigurationKeyError";
   }
+}
+export class InvalidLinkedFileConfigurationError extends Error {
+  constructor(file: string, error: Error) {
+    super(`Configuration could not read from ${file}, ${error.message}`);
+    this.name = "InvalidLinkedFileConfigurationError";
+  }
+}
+export class InvalidBase64ConfigurationError extends Error {
+  constructor(key: string) {
+    super(`Configuration could not decode base64 from key "${key}"`);
+    this.name = "InvalidBase64ConfigurationError";
+  }
+}
+
+// this handles transparent file and base64 encoded values.
+// this needs a cache.
+const valueCache = new Map<string, string>();
+function expandValue(k: string, v: string): string {
+  if (valueCache.has(k)) {
+    return valueCache.get(k)!;
+  }
+  // linked file
+  if (v.startsWith("file://")) {
+    try {
+      const content = readFileSync(v.slice(7), "utf8");
+      valueCache.set(k, content);
+      return content;
+    } catch (e) {
+      throw new InvalidLinkedFileConfigurationError(v, e);
+    }
+  }
+  // inline base64
+  if (v.startsWith("base64://")) {
+    try {
+      const content = Buffer.from(v.slice(9), "base64").toString("utf8");
+      valueCache.set(k, content);
+      return content;
+    } catch {
+      throw new InvalidBase64ConfigurationError(k);
+    }
+  }
+  return v;
 }

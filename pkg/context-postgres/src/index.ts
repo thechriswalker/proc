@@ -1,4 +1,8 @@
-import { Context, createProperty, PropertyLoader } from "@proc/context";
+import {
+  Context,
+  createLifecycleProperty,
+  PropertyLoader
+} from "@proc/context";
 import { Connection, ConnectionProxy, Queryable } from "@proc/context-db";
 import { Pool } from "pg";
 import * as pg from "pg";
@@ -24,19 +28,24 @@ const createDatabase = (
   connOptsWrite: string | pg.PoolConfig,
   connOptsRead?: string | pg.PoolConfig
 ): PropertyLoader<ConnectionProxy> => {
-  const writePool = createPool(connOptsWrite);
-  const readPool = connOptsRead ? createPool(connOptsRead) : writePool;
+  let writePool: Queryable;
+  let readPool: Queryable;
 
-  const getDatabase = createProperty<ConnectionProxy>(
+  const getDatabase = createLifecycleProperty<ConnectionProxy>(
+    () => {
+      writePool = createPool(connOptsWrite);
+      readPool = connOptsRead ? createPool(connOptsRead) : writePool;
+    },
     (ctx: Context) => new Connection(ctx, readPool, writePool),
+    () => {
+      /* empty */
+    },
     async (ctx: Context): Promise<void> => {
-      if (ctx.isTopLevelContext) {
-        const ends = [new Promise(r => (writePool as pg.Pool).end(() => r()))];
-        if (readPool !== writePool) {
-          ends.push(new Promise(r => (readPool as pg.Pool).end(() => r())));
-        }
-        await Promise.all(ends);
+      const ends = [new Promise(r => (writePool as pg.Pool).end(() => r()))];
+      if (readPool !== writePool) {
+        ends.push(new Promise(r => (readPool as pg.Pool).end(() => r())));
       }
+      await Promise.all(ends);
     }
   );
   return getDatabase;

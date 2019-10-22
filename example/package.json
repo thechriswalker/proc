@@ -1,0 +1,7 @@
+{
+  "name": "example",
+  "version": "1.0.0",
+  "description": "Example @proc/runtime app",
+  "main": "index.js",
+  "license": "MIT"
+}

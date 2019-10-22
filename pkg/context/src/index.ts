@@ -17,10 +17,11 @@ export interface Context {
   isTopLevelContext: boolean;
   lifetime: number;
   creation: number;
-  done: () => number;
+  done: () => Promise<number>;
   wait: () => Promise<void>;
   waitForChildren: () => Promise<void>;
   child: (id?: string) => this;
+  onDone: (fn: () => any) => void;
 }
 const noreap = () => {
   // empty
@@ -31,18 +32,20 @@ const noreap = () => {
 
 class ContextImpl {
   get lifetime(): number {
-    return this.isDone ? this.done() : Date.now() - this._start;
+    return this._finish ? this._finish : Date.now() - this._start;
   }
   get creation(): number {
     return this._start;
   }
   get isDone(): boolean {
-    return this._doneSync !== undefined;
+    return this._finish !== undefined;
   }
   protected _reap: () => void = noreap;
   private _children: Array<ContextImpl> = [];
-  private _doneSync: number | undefined;
-  private _doneAsync: Deferral | undefined;
+  private _unloadHooks: Array<() => any> = [];
+  private _finish: number | undefined;
+  private _is_shutting_down: boolean = false;
+  private _shutdown: Deferral<number> | undefined;
   private readonly _start: number = Date.now();
 
   constructor(
@@ -50,46 +53,50 @@ class ContextImpl {
     readonly isTopLevelContext: boolean,
     readonly id: string
   ) {}
-  public done(): number {
-    if (this._doneSync !== undefined) {
-      // this is not considered an error
-      return this._doneSync;
+  public async done(): Promise<number> {
+    if (this._is_shutting_down) {
+      return this._shutdown!.promise;
     }
     if (this._children.length !== 0) {
       throw new Error(
         "Attempt to call `done()` on a context with active children"
       );
     }
-    this._doneSync = this.lifetime;
+    this._is_shutting_down = true;
+    if (!this._shutdown) {
+      this._shutdown = defer();
+    }
+
+    // clear any unloading hooks
+    await Promise.all(
+      this._unloadHooks.map(async hook => {
+        await hook();
+      })
+    );
+    // truncate the unload hooks (no references)
+    this._unloadHooks.length = 0;
+
     if (this._reap) {
       this._reap();
     }
-    if (this._doneAsync !== undefined) {
-      // resolve the async version.
-      this._doneAsync.deferral();
-    }
-    return this._doneSync;
+
+    this._finish = Date.now();
+    this._shutdown.deferral(this._finish);
+    return this._finish;
   }
-  public wait(): Promise<void> {
-    if (this._doneSync) {
-      return Promise.resolve();
+  // this is like done, but waits
+  public wait(): Promise<any> {
+    if (this._is_shutting_down || this._shutdown) {
+      return this._shutdown!.promise;
     }
-    if (this._doneAsync === undefined) {
-      let deferral: () => void;
-      const promise = new Promise<void>(resolve => (deferral = resolve));
-      // @ts-ignore - TS doesn't understand that the promise inner function is synchronous
-      this._doneAsync = { promise, deferral };
-    }
-    return this._doneAsync.promise;
+    this._shutdown = defer();
+    return this._shutdown.promise;
   }
   public async waitForChildren(): Promise<void> {
-    if (this._doneSync || this._children.length === 0) {
-      return;
-    }
     await Promise.all(this._children.map(kid => kid.wait()));
   }
   public child(id: string = this._idGen()) {
-    if (this.isDone) {
+    if (this._is_shutting_down) {
       throw new Error("`Context.child` called after `Context.done`");
     }
     // wow, typescript makes you jump through some hoops to get "species"
@@ -101,12 +108,26 @@ class ContextImpl {
     this._children.push(kid);
     return kid;
   }
+  public onDone(fn: () => any) {
+    this._unloadHooks.push(fn);
+  }
 }
 
-type Deferral = {
-  promise: Promise<void>;
-  deferral: () => void;
+type Deferral<T = any> = {
+  promise: Promise<T>;
+  deferral: (t: T) => void;
 };
+
+function defer<T>(): Deferral<T> {
+  let deferral: Deferral<T>["deferral"];
+  const promise = new Promise<T>(resolve => {
+    deferral = (t: T) => {
+      resolve(t);
+    };
+  });
+  // @ts-ignore - TS doesn't understand that the promise inner function is synchronous
+  return { deferral, promise };
+}
 
 export type ContextEnhancer<Enhanced extends Context> = (
   ctx: Context
@@ -165,10 +186,40 @@ function createProperty<T, C extends Context = Context>(
     if (!wm.has(ctx)) {
       const loaded = load(ctx);
       wm.set(ctx, loaded);
-      ctx.wait().then(() => unload(ctx, loaded));
+      ctx.onDone(() => unload(ctx, loaded));
     }
     return wm.get(ctx) as T;
   };
+}
+
+export function createLifecycleProperty<T, C extends Context = Context>(
+  init: (ctx: C) => any,
+  load: PropertyLoader<T, C>,
+  unload: Unloader<T, C>,
+  destructor: (ctx: C) => Promise<any>
+): PropertyLoader<T, C> {
+  // the only difference here is that it must first be called with a TOP-LEVEL context
+  let hasBeenInitialised = false;
+  const loader: PropertyLoader<T, C> = (ctx: C) => {
+    if (hasBeenInitialised) {
+      if (ctx.isTopLevelContext) {
+        hasBeenInitialised = true;
+        init(ctx);
+      } else {
+        throw new Error(
+          "Must initialise a lifecycle property with a top-level context"
+        );
+      }
+    }
+    return load(ctx);
+  };
+  const unloader: Unloader<T, C> = async (ctx, loaded) => {
+    await unload(ctx, loaded);
+    if (ctx.isTopLevelContext) {
+      await destructor(ctx);
+    }
+  };
+  return createProperty(loader, unloader);
 }
 
 export { createProperty };

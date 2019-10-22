@@ -1,6 +1,6 @@
-import { createProperty, PropertyLoader } from "@proc/context";
+import { createLifecycleProperty, PropertyLoader } from "@proc/context";
 
-import Redis from "ioredis";
+import Redis, { RedisOptions } from "ioredis";
 
 export type Client = Redis.Redis;
 export type ClientOptions = Redis.RedisOptions;
@@ -17,28 +17,24 @@ export type ClientOptions = Redis.RedisOptions;
 // for borrowing a connection if we want to block, otherwise we use the same
 // connection for everything.
 
-export const createRedis = (
-  redisConfig: ClientOptions | string
-): PropertyLoader<Client> => {
-  // we actually only want a single connection.
-  if (typeof redisConfig === "string") {
-    const lazy = "lazyConnect=true";
-    redisConfig = redisConfig.includes("?")
-      ? `${redisConfig}&${lazy}`
-      : `${redisConfig}?${lazy}`;
-  } else {
-    redisConfig.lazyConnect = true;
-  }
-  // @ts-ignore - ioredis types are no good
-  const conn = new Redis(redisConfig) as Client;
-  return createProperty(
-    // despite @types/ioredis, this can be a string
-    () => conn,
+export const createRedis = (redisDSN: string): PropertyLoader<Client> => {
+  const extraOptions: RedisOptions = {
+    lazyConnect: true,
+    maxRetriesPerRequest: 2
+  };
+
+  let conn: Redis.Redis;
+  return createLifecycleProperty(
+    () => {
+      conn = new Redis(redisDSN, extraOptions) as Client;
+    },
+    () => conn, // real singleton
+    () => {
+      // empty
+    },
     ctx => {
       // if the status is "wait" we haven't even tried to connect.
-      if (ctx.isTopLevelContext && conn.status !== "wait") {
-        return conn.quit();
-      }
+      return conn.quit();
     }
   );
 };

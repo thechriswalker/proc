@@ -7,8 +7,8 @@ export enum ErrorVariant {
   USER_INPUT, // validation error (e.g. unprocessable entity)
   CONFLICT, // non-user error, but the thing cannot be done due to business rules.
   NOT_FOUND, // not found,
-  UNAUTHENTICATED, // authentication required but not present (e.g. http unauthorized)
-  UNAUTHORIZED // authentication present but insufficient (e.g. http forbidden)
+  UNAUTHENTICATED, // authentication required but not present / invalid (e.g. http unauthorized)
+  UNAUTHORIZED // authentication present and valid but insufficient (e.g. http forbidden)
 }
 
 class ProcError extends Error {

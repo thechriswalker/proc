@@ -28,7 +28,6 @@ export async function createGraphQLMiddleware<Ctx>(
   getRequestContext: (ktx: any) => Ctx
 ) {
   const app = new Koa();
-  const path = config.path || "/graphql";
   const prevOptions = server.createGraphQLServerOptions.bind(server);
   server.createGraphQLServerOptions = async ktx => {
     const ctx = getRequestContext(ktx);

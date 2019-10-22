@@ -1,4 +1,9 @@
-import { Context, createProperty, PropertyLoader } from "@proc/context";
+import {
+  Context,
+  createLifecycleProperty,
+  createProperty,
+  PropertyLoader
+} from "@proc/context";
 import {
   Connection,
   ConnectionProxy,
@@ -22,16 +27,7 @@ const createDatabase = (dsn: string): PropertyLoader<ConnectionProxy> => {
   }
 
   // wrap the opener in a promise.
-  const promise = new Promise<Database>((resolve, reject) => {
-    const db: Database = new Database(pathname, err =>
-      err ? reject(err) : resolve(db)
-    );
-  });
-  promise.catch(err => {
-    // this error is handled later in the code, on first use
-    // but node barfs about unhandled rejections if this noop
-    // isn't here.
-  });
+  let promise: Promise<Database>;
 
   function all(db: Database, query: string, values?: Array<any>) {
     return new Promise((resolve, reject) => {
@@ -60,18 +56,34 @@ const createDatabase = (dsn: string): PropertyLoader<ConnectionProxy> => {
     }
   };
 
-  const getDatabase = createProperty<ConnectionProxy>(
-    (ctx: Context) => new Connection(ctx, queryable, queryable),
-    async (ctx: Context): Promise<void> => {
-      if (ctx.isTopLevelContext) {
-        // don't care about the possible catch here
-        await promise.then(
-          db => close(db),
-          () => {
-            // empty
-          }
+  const noop = () => {
+    // empty
+  };
+
+  const getDatabase = createLifecycleProperty<ConnectionProxy>(
+    () => {
+      promise = new Promise<Database>((resolve, reject) => {
+        const db: Database = new Database(pathname, err =>
+          err ? reject(err) : resolve(db)
         );
-      }
+      });
+      promise.catch(err => {
+        // this error is handled later in the code, on first use
+        // but node barfs about unhandled rejections if this noop
+        // isn't here.
+      });
+    },
+    (ctx: Context) => new Connection(ctx, queryable, queryable),
+    noop, // no per-instance unloading
+    async (ctx: Context): Promise<void> => {
+      // don't care about the possible catch here, but only on the original
+      // promise
+      await promise.then(
+        db => close(db),
+        () => {
+          // empty
+        }
+      );
     }
   );
   return getDatabase;

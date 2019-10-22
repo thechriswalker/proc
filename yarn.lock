@@ -1127,13 +1127,6 @@
     once "^1.4.0"
     universal-user-agent "^4.0.0"
 
-"@panva/jose@^1.9.2":
-  version "1.9.2"
-  resolved "https://registry.yarnpkg.com/@panva/jose/-/jose-1.9.2.tgz#3c42ca1f4e7ba13c75167e248b780c6348cbb37d"
-  integrity sha512-Uw/ggY8nlemS23Sec1ud6A09I0x6Hji7Ma2xe+EMP2FbkWRt1IAhoK0lBMmMsrsOLVXV/6udcq11MDaeef9jRA==
-  dependencies:
-    asn1.js "^5.1.1"
-
 "@protobufjs/aspromise@^1.1.1", "@protobufjs/aspromise@^1.1.2":
   version "1.1.2"
   resolved "https://registry.yarnpkg.com/@protobufjs/aspromise/-/aspromise-1.1.2.tgz#9b8b0cc663d669a7d8f6f5d0893a14d348f30fbf"
@@ -1915,7 +1908,7 @@ asap@^2.0.0:
   resolved "https://registry.yarnpkg.com/asap/-/asap-2.0.6.tgz#e50347611d7e690943208bbdafebcbc2fb866d46"
   integrity sha1-5QNHYR1+aQlDIIu9r+vLwvuGbUY=
 
-asn1.js@^5.1.1, asn1.js@^5.2.0:
+asn1.js@^5.2.0:
   version "5.2.0"
   resolved "https://registry.yarnpkg.com/asn1.js/-/asn1.js-5.2.0.tgz#292c0357f26a47802ac9727e8772c09c7fc9bd85"
   integrity sha512-Q7hnYGGNYbcmGrCPulXfkEw7oW7qjWeM4ZTALmgpuIcZLxyqqKYWxCZg2UBm8bklrnB4m2mGyJPWfoktdORD8A==

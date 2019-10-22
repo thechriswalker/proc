@@ -1,16 +1,16 @@
+import { Configuration } from "@proc/configuration";
 import { createMiddleware, getRequestContext } from "@proc/context-koa";
 import exitHook from "async-exit-hook";
+import { readFileSync } from "fs";
 import { createServer } from "http";
 import koa from "koa";
+import { join } from "path";
+import { AppVersionInfo, initConfiguration } from "./config";
 import {
   BaseContext,
   BaseContextEnhancer,
   createParentContext
 } from "./context";
-import { Configuration } from "@proc/configuration";
-import { join } from "path";
-import { AppVersionInfo, initConfiguration } from "./config";
-import { readFileSync } from "fs";
 
 export { initConfiguration };
 export { BaseContext, BaseContextEnhancer };
@@ -65,6 +65,18 @@ export function bootstrap<Ctx extends BaseContext = BaseContext>(
       return next();
     });
   }
+
+  if (!config.getBoolean("PROC_NO_HEALTHCHECK", false)) {
+    middlewareStack.push((ktx, next) => {
+      if (ktx.path === "/_health" && ["HEAD", "GET"].includes(ktx.method)) {
+        ktx.set("Content-Type", "text/plain");
+        ktx.body = "OK";
+      } else {
+        return next();
+      }
+    });
+  }
+
   return {
     ctx: context,
     info,
@@ -146,7 +158,7 @@ async function run<Ctx extends BaseContext>(
     log.info(" - Webserver stopped");
     await context.waitForChildren();
     log.info(" - Child contexts exited");
-    context.done();
+    await context.done();
     log.info(" - Shutdown sequence finished");
     cb();
   };

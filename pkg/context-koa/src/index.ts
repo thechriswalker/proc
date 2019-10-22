@@ -14,7 +14,7 @@ export function createMiddleware<Ctx extends Context>(
       await next();
     } finally {
       await ctx.waitForChildren();
-      ctx.done();
+      await ctx.done();
     }
   };
 }
@@ -25,9 +25,9 @@ export function getRequestContext<Ctx extends Context>(ktx: any): Ctx {
     if (ctx) {
       return ctx as Ctx;
     }
-  } catch (e) {
-    // ignore the error
+  } catch {
+    // ignore the actual error
   }
-  // if we reach here, throw.
+  // throw this one
   throw new Error("Attempt to get context without setting it.");
 }

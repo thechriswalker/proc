@@ -1,4 +1,5 @@
 import { execSync } from "child_process";
+import { readFileSync } from "fs";
 import { AppVersionInfo } from "./config";
 
 export function loadVersionInfo(vcs: boolean = false): AppVersionInfo {
@@ -13,7 +14,9 @@ export function loadVersionInfo(vcs: boolean = false): AppVersionInfo {
     dirty: true
   };
   try {
-    const { name } = require(process.cwd() + "/package.json") as Pjson;
+    const { name } = JSON.parse(
+      readFileSync(process.cwd() + "/package.json", "utf8")
+    ) as Pjson;
     info.name = name;
   } catch {}
 

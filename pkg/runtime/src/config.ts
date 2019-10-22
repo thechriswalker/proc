@@ -15,9 +15,32 @@ export function initConfiguration(
 ): [Configuration, AppVersionInfo] {
   // this reads and parses the dotenv file
   const dotCfg = dotenvConfig();
-  if (dotCfg.error) {
-    throw dotCfg.error;
+  // if it just doesn't exist then that's fine.
+  const error = dotCfg.error;
+  if (error) {
+    if ((error as any).code === "ENOENT") {
+      // this means could no .env file.
+      // which is OK.
+      // tslint:disable no-console
+      console.error(`[@proc/runtime][WARN] ${error.message}`);
+    } else {
+      // this could be more serious so we throw
+      throw error;
+    }
   }
+
+  // we pre-process the dot-config for file:// or base64:// data and convert on the fly
+  // but file data needs an absolute path.
+  const baseFileUrl = `file://${process.cwd()}`;
+  const preProcessed = Object.fromEntries(
+    Object.entries(dotCfg.parsed || {}).map(([k, v]) => {
+      if (v.startsWith("file://")) {
+        v = new URL(v, baseFileUrl).href;
+      }
+      return [k, v];
+    })
+  );
+
   // order of object is important
   const source = Object.assign(
     {
@@ -27,7 +50,7 @@ export function initConfiguration(
       VCS_DIRTY: info.dirty ? "true" : "false",
       APP_BUILD_DATE: info.buildDate
     },
-    dotCfg.parsed || {},
+    preProcessed,
     process.env,
     {
       // NB: We use APP_ENV for the runtime environment, because we generally want
