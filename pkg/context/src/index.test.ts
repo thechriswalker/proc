@@ -1,4 +1,9 @@
-import { Context, createContext, createProperty } from "./index";
+import {
+  Context,
+  createContext,
+  createProperty,
+  createLifecycleProperty
+} from "./index";
 
 const pause = (ms: number) => new Promise(r => setTimeout(r, ms));
 
@@ -74,7 +79,7 @@ describe("Application Context", () => {
 });
 
 describe("Context Properties", () => {
-  it("should be able to create a property with a lifecycle", async () => {
+  it("should be able to create a property with an unloader", async () => {
     const create = jest.fn();
     const destroy = jest.fn();
     const prop = createProperty<number>(
@@ -95,6 +100,66 @@ describe("Context Properties", () => {
     expect(destroy).not.toBeCalled();
     await ctx.done();
     expect(destroy).toBeCalled();
+  });
+  it("should be able to create a property with a lifecycle", async () => {
+    const create = jest.fn();
+    const destroy = jest.fn();
+    const load = jest.fn();
+    const unload = jest.fn();
+    const prop = createLifecycleProperty<number>(
+      (ctx2: Context): number => {
+        create();
+        return 1;
+      },
+      (ctx2: Context): number => {
+        load();
+        return 1;
+      },
+      (ctx2: Context, loaded: number) => {
+        unload();
+      },
+      async (ctx2: Context) => {
+        destroy();
+      }
+    );
+    expect(create).not.toBeCalled();
+    expect(destroy).not.toBeCalled();
+    const ctx = createContext();
+    expect(ctx.isTopLevelContext).toBe(true);
+    const child = ctx.child();
+    expect(child.isTopLevelContext).toBe(false);
+    expect(() => prop(child)).toThrowError();
+    expect(create).not.toBeCalled();
+    expect(load).not.toBeCalled();
+
+    const n = prop(ctx);
+    expect(n).toBe(1);
+
+    expect(create).toBeCalledTimes(1);
+    expect(load).toBeCalledTimes(1);
+    expect(unload).toBeCalledTimes(0);
+    expect(destroy).toBeCalledTimes(0);
+
+    prop(child);
+
+    expect(create).toBeCalledTimes(1);
+    expect(load).toBeCalledTimes(2);
+    expect(unload).toBeCalledTimes(0);
+    expect(destroy).toBeCalledTimes(0);
+
+    await child.done();
+
+    expect(create).toBeCalledTimes(1);
+    expect(load).toBeCalledTimes(2);
+    expect(unload).toBeCalledTimes(1);
+    expect(destroy).toBeCalledTimes(0);
+
+    await ctx.done();
+
+    expect(create).toBeCalledTimes(1);
+    expect(load).toBeCalledTimes(2);
+    expect(unload).toBeCalledTimes(2);
+    expect(destroy).toBeCalledTimes(1);
   });
 });
 

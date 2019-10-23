@@ -201,7 +201,7 @@ export function createLifecycleProperty<T, C extends Context = Context>(
   // the only difference here is that it must first be called with a TOP-LEVEL context
   let hasBeenInitialised = false;
   const loader: PropertyLoader<T, C> = (ctx: C) => {
-    if (hasBeenInitialised) {
+    if (!hasBeenInitialised) {
       if (ctx.isTopLevelContext) {
         hasBeenInitialised = true;
         init(ctx);
