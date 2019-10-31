@@ -5,7 +5,10 @@
   "main": "dist/index",
   "types": "dist/index.d.ts",
   "files": [
-    "dist/**/*"
+    "dist/**/*",
+    "memory.js",
+    "redis.js",
+    "sql.js"
   ],
   "author": "Chris Walker <chris@thechriswalker.net>",
   "license": "MIT",

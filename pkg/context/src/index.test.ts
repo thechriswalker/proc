@@ -1,8 +1,8 @@
 import {
   Context,
   createContext,
-  createProperty,
-  createLifecycleProperty
+  createLifecycleProperty,
+  createProperty
 } from "./index";
 
 const pause = (ms: number) => new Promise(r => setTimeout(r, ms));
