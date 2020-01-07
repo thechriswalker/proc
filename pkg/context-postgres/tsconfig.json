@@ -1,9 +1,11 @@
 {
-  "extends": "../../tsconfig.json",
+  "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "outDir": "./dist",
+    "rootDir": "./src",
     "baseUrl": "."
   },
   "include": ["src/**/*.ts"],
-  "exclude": ["src/**/*.test.ts", "**/*.spec.ts", "**/__test__/*.ts"]
+  "exclude": ["**/*.test.ts", "**/*.spec.ts", "**/__test__/*.ts"],
+  "references": [{ "path": "../context" }, { "path": "../context-db" }]
 }

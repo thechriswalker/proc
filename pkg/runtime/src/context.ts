@@ -13,7 +13,6 @@ export interface BaseContext extends Context {
   config: Configuration;
   authn: Authn;
 }
-
 export type BaseContextEnhancer<Ctx extends BaseContext> = (
   ctx: BaseContext
 ) => Ctx;

@@ -75,7 +75,11 @@ interface BasicQueries {
 
 // this is the exposed interface
 export interface ConnectionProxy extends BasicQueries {
+  // get all of them.
   getStatistics(): Array<QueryStat>;
+
+  // handle in-line
+  onStatistics(handler: StatCallback): void;
 
   explain(query: Query, values?: ReadonlyArray<any>): Promise<Result>;
 
@@ -107,6 +111,8 @@ export type PoolStat = {
   waiting: number;
 };
 
+export type StatCallback = (q: QueryStat) => any;
+
 // this might be a pool, connection, cluster, transaction, etc...
 export interface Queryable {
   query<T = any>(query: Query, values?: ReadonlyArray<any>): Promise<Result<T>>;
@@ -116,24 +122,26 @@ export interface Queryable {
   }>;
 }
 
+type StatRecorder = (stat: QueryStat) => () => void;
+
 function runQuery(
   kind: QType.Explain,
   db: Queryable,
-  stats: Array<QueryStat>,
+  stats: StatRecorder,
   query: Query,
   values?: ReadonlyArray<any>
 ): Promise<Result>;
 function runQuery<T>(
   kind: QType.Select | QType.Insert | QType.Update | QType.Delete | QType.Any,
   db: Queryable,
-  stats: Array<QueryStat>,
+  stats: StatRecorder,
   query: Query,
   values?: ReadonlyArray<any>
 ): Promise<Result<T>>;
 async function runQuery<T>(
   kind: QType,
   db: Queryable,
-  stats: Array<QueryStat>,
+  stats: StatRecorder,
   query: Query,
   values?: ReadonlyArray<any>
 ): Promise<Result<T>> {
@@ -161,7 +169,7 @@ async function runQuery<T>(
     enforceQueryType(kind, query.text);
   }
   // this only happens if the enforceQueryType check passes
-  stats.push(stat);
+  const finalize = stats(stat);
   try {
     const result = await db.query(query, values);
     return result;
@@ -171,6 +179,7 @@ async function runQuery<T>(
   } finally {
     stat.finish = Date.now();
     stat.duration = stat.finish - stat.start;
+    finalize();
   }
 }
 
@@ -202,19 +211,36 @@ function enforceQueryType(kind: QType, query: string): void {
 }
 
 export class Queryer {
+  protected statRecorder: StatRecorder;
   constructor(
     protected ctx: Context,
     protected writePool: Queryable,
     protected readPool: Queryable,
-    protected stats: Array<QueryStat> = []
-  ) {}
+    protected stats: Array<QueryStat> = [],
+    protected statCallbacks: Array<StatCallback> = []
+  ) {
+    this.statRecorder = (s: QueryStat) => {
+      stats.push(s);
+      return () => statCallbacks.forEach(cb => cb(s));
+    };
+  }
 
   public getStatistics(this: Queryer) {
     return this.stats.slice();
   }
 
+  public onStatistics(handler: StatCallback): void {
+    this.statCallbacks.push(handler);
+  }
+
   public explain(query: Query, values?: ReadonlyArray<any>): Promise<Result> {
-    return runQuery(QType.Explain, this.readPool, this.stats, query, values);
+    return runQuery(
+      QType.Explain,
+      this.readPool,
+      this.statRecorder,
+      query,
+      values
+    );
   }
 
   // this is a fake ping, for simplicity (the real mysql ping method)
@@ -235,7 +261,13 @@ export class Queryer {
     query: Query,
     values?: ReadonlyArray<any>
   ): Promise<Result<T>> {
-    return runQuery<T>(QType.Select, this.readPool, this.stats, query, values);
+    return runQuery<T>(
+      QType.Select,
+      this.readPool,
+      this.statRecorder,
+      query,
+      values
+    );
   }
 
   public async selectOne<T = any>(
@@ -261,28 +293,52 @@ export class Queryer {
     query: Query,
     values?: ReadonlyArray<any>
   ): Promise<Result<T>> {
-    return runQuery<T>(QType.Insert, this.writePool, this.stats, query, values);
+    return runQuery<T>(
+      QType.Insert,
+      this.writePool,
+      this.statRecorder,
+      query,
+      values
+    );
   }
   public update<T = any>(
     this: Queryer,
     query: Query,
     values?: ReadonlyArray<any>
   ): Promise<Result<T>> {
-    return runQuery<T>(QType.Update, this.writePool, this.stats, query, values);
+    return runQuery<T>(
+      QType.Update,
+      this.writePool,
+      this.statRecorder,
+      query,
+      values
+    );
   }
   public delete<T = any>(
     this: Queryer,
     query: Query,
     values?: ReadonlyArray<any>
   ): Promise<Result<T>> {
-    return runQuery<T>(QType.Delete, this.writePool, this.stats, query, values);
+    return runQuery<T>(
+      QType.Delete,
+      this.writePool,
+      this.statRecorder,
+      query,
+      values
+    );
   }
   public query<T = any>(
     this: Queryer,
     query: Query,
     values?: ReadonlyArray<any>
   ): Promise<Result<T>> {
-    return runQuery<T>(QType.Any, this.writePool, this.stats, query, values);
+    return runQuery<T>(
+      QType.Any,
+      this.writePool,
+      this.statRecorder,
+      query,
+      values
+    );
   }
 }
 

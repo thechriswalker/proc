@@ -42,7 +42,7 @@ should update your entities and set the flag explicitly.
 i.e. you want all users that were created before 2010 to have the flag.
 
 ```ts
-const feature = createFeature(storage);
+const feature = createFeatureFlags(storage);
 const userIds = await fetchUsersCreatedBefore(2010);
 await Promise.all(userIds.map(id => feature.set("MY_AWESOME_THING", id, true)));
 ```
@@ -58,8 +58,8 @@ NB: there are 2 caveats to this approach:
    so this package will log a warning if you configure both.
 
 ```ts
-const feature = createFeature(storage);
-feature.custom(
+const feature = createFeatureFlags(storage);
+feature.create(
   "MY_AWESOME_FEATURE",
   async (ctx, userId): Promise<boolean> => {
     // look up something about the user.
@@ -76,8 +76,11 @@ them and the logic in a single place.
 ```ts
 import { spread } from "@proc/context-features";
 
-const feature = createFeature(storage);
+const feature = createFeatureFlags(storage);
 
 // same as using the configuration
 feature.create("MY_AWESOME_THING", spread(0.5));
 ```
+
+Of course your sotrage will probably use `ctx` (`@proc/context`) so you will need
+to initialise your features with context, and attach them with an enhancer.

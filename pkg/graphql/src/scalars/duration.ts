@@ -156,9 +156,7 @@ const parseLiteral: GraphQLScalarLiteralParser<number> = ast => {
       return deserialize(ast.value);
     default:
       throw new GraphQLError(
-        `Can only parse strings/integers/floats as a duration but got a: ${
-          ast.kind
-        }`
+        `Can only parse strings/integers/floats as a duration but got a: ${ast.kind}`
       );
   }
 };

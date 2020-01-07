@@ -1,7 +1,7 @@
 {
-  "name": "@proc/context-auth",
+  "name": "@proc/context-metrics-statsd",
   "version": "0.1.36",
-  "description": "Authentication and authorization module for @proc/context",
+  "description": "The StatsD plugin for Metrics using context",
   "main": "dist/index",
   "types": "dist/index.d.ts",
   "files": [
@@ -25,5 +25,9 @@
   },
   "publishConfig": {
     "access": "public"
+  },
+  "dependencies": {
+    "@proc/context-metrics": "^0.1.36",
+    "got": "^10.2.1"
   }
 }

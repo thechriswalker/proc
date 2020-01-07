@@ -12,20 +12,22 @@
   "scripts": {
     "prepublishOnly": "yarn run build",
     "test": "jest --config ../../jest.config.js --passWithNoTests",
-    "build": "tsc"
+    "build": "tsc --build",
+    "clean": "rm -rf ./dist ./tsconfig.tsbuildinfo"
   },
   "dependencies": {
-    "apollo-server-koa": "^2.9.7",
+    "apollo-server-koa": "^2.9.15",
     "graphql": "^14.3.1",
-    "koa": "^2.10.0",
+    "koa": "^2.11.0",
     "koa-mount": "^4.0.0"
   },
   "devDependencies": {
-    "@types/jest": "^24.0.19",
+    "@types/jest": "^24.0.25",
     "@types/koa-mount": "^4.0.0",
+    "@types/node": "^13.1.4",
     "jest": "^24.8.0",
-    "ts-jest": "^24.0.2",
-    "typescript": "^3.6.4"
+    "ts-jest": "^24.3.0",
+    "typescript": "^3.7.4"
   },
   "publishConfig": {
     "access": "public"

@@ -64,15 +64,30 @@ describe("async template", () => {
             ${Array.from({ length: 3 }).map(
               (_, i) =>
                 html`
-                  <li key="${i}">item:${i}</li>
+                  <li>item:${i}</li>
                 `
             )}
           </ul>
         `
       )
-    ).resolves.toBe(`<ul>
-            <li>item:0</li><li>item:1</li><li>item:2</li>
-          </ul>`);
+    ).resolves.toBe(`<ul><li>item:0</li><li>item:1</li><li>item:2</li></ul>`);
+  });
+
+  it("should handle async array insertions", async () => {
+    await expect(
+      render(
+        html`
+          <ul>
+            ${Array.from({ length: 3 }).map(
+              async (_, i) =>
+                html`
+                  <li>item:${i}</li>
+                `
+            )}
+          </ul>
+        `
+      )
+    ).resolves.toBe(`<ul><li>item:0</li><li>item:1</li><li>item:2</li></ul>`);
   });
 
   it("should cope with multiple root nodes / fragments", async () => {

@@ -1,7 +1,7 @@
 {
-  "name": "@proc/context-auth",
+  "name": "@proc/context-metrics",
   "version": "0.1.36",
-  "description": "Authentication and authorization module for @proc/context",
+  "description": "The main interface for Metrics using context",
   "main": "dist/index",
   "types": "dist/index.d.ts",
   "files": [

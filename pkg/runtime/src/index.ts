@@ -120,11 +120,11 @@ async function run<Ctx extends BaseContext>(
   middlewares: Array<koa.Middleware<any, any>>
 ) {
   const app = new koa();
+  app.proxy = true; // of course you will be using at least one reverse proxy.
+
   const contextMiddleware = createMiddleware(context);
   // add context middleware.
   app.use(contextMiddleware);
-  // set a
-
   // then all the user middleware
   middlewares.forEach(m => app.use(m));
 

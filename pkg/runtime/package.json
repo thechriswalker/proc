@@ -12,7 +12,8 @@
   "scripts": {
     "prepublishOnly": "yarn run build",
     "test": "jest --config ../../jest.config.js --passWithNoTests",
-    "build": "tsc"
+    "build": "tsc --build",
+    "clean": "rm -rf ./dist ./tsconfig.tsbuildinfo"
   },
   "dependencies": {
     "@proc/configuration": "^0.1.35",
@@ -21,16 +22,16 @@
     "@proc/context-koa": "^0.1.36",
     "@proc/context-pino": "^0.1.36",
     "async-exit-hook": "^2.0.1",
-    "cuid": "^2.1.1",
+    "cuid": "^2.1.8",
     "dotenv": "^8.2.0",
-    "jose": "^1.10.1",
-    "koa": "^2.10.0"
+    "jose": "^1.18.1",
+    "koa": "^2.11.0"
   },
   "devDependencies": {
-    "@types/dotenv": "^6.1.1",
-    "@types/koa": "^2.0.51",
-    "@types/node": "^12.11.2",
-    "typescript": "^3.6.4"
+    "@types/dotenv": "^8.2.0",
+    "@types/koa": "^2.11.0",
+    "@types/node": "^13.1.4",
+    "typescript": "^3.7.4"
   },
   "publishConfig": {
     "access": "public"

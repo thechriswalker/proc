@@ -1,5 +1,6 @@
 import { Configuration, createConfiguration } from "@proc/configuration";
 import { config as dotenvConfig } from "dotenv";
+import { dirname, resolve } from "path";
 import { loadVersionInfo } from "./version";
 
 export interface AppVersionInfo {
@@ -13,8 +14,10 @@ export interface AppVersionInfo {
 export function initConfiguration(
   info: AppVersionInfo = loadVersionInfo()
 ): [Configuration, AppVersionInfo] {
+  // the dotenv config is read from process.
+  const dotenvConfigPath = process.env.DOTENV_CONFIG_PATH || "./.env";
   // this reads and parses the dotenv file
-  const dotCfg = dotenvConfig();
+  const dotCfg = dotenvConfig({ path: dotenvConfigPath });
   // if it just doesn't exist then that's fine.
   const error = dotCfg.error;
   if (error) {
@@ -29,9 +32,11 @@ export function initConfiguration(
     }
   }
 
+  const basePath = dirname(resolve(dotenvConfigPath));
+
   // we pre-process the dot-config for file:// or base64:// data and convert on the fly
   // but file data needs an absolute path.
-  const baseFileUrl = `file://${process.cwd()}`;
+  const baseFileUrl = `file://${basePath}/`;
   const preProcessed = Object.fromEntries(
     Object.entries(dotCfg.parsed || {}).map(([k, v]) => {
       if (v.startsWith("file://")) {

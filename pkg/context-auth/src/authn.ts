@@ -1,5 +1,3 @@
-import { Context } from "@proc/context";
-
 // our authentication is owner, subject, scope.
 // checks against authn are of the form:
 //  - does the subject and scope match?
@@ -46,6 +44,10 @@ export class Authn {
   }
   public isUser(): boolean {
     return isUser(this.subject);
+  }
+
+  public hasScopes(...scopes: Array<string>): boolean {
+    return scopes.every(scope => this.scopes.includes(scope));
   }
 
   public toJSON() {

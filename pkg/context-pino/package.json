@@ -10,21 +10,23 @@
   "author": "Chris Walker <chris@thechriswalker.net>",
   "license": "MIT",
   "devDependencies": {
-    "@types/jest": "^24.0.19",
+    "@types/jest": "^24.0.25",
+    "@types/node": "^13.1.4",
     "jest": "^24.8.0",
-    "ts-jest": "^24.0.2",
-    "typescript": "^3.6.4"
+    "ts-jest": "^24.3.0",
+    "typescript": "^3.7.4"
   },
   "dependencies": {
     "@proc/context": "^0.1.36",
     "@types/pino": "^5.20.0",
-    "pino": "^5.13.5",
-    "pino-pretty": "^3.2.2"
+    "pino": "^5.15.0",
+    "pino-pretty": "^3.5.0"
   },
   "scripts": {
     "prepublishOnly": "yarn run build",
     "test": "jest --config ../../jest.config.js --passWithNoTests",
-    "build": "tsc"
+    "build": "tsc --build",
+    "clean": "rm -rf ./dist ./tsconfig.tsbuildinfo"
   },
   "publishConfig": {
     "access": "public"

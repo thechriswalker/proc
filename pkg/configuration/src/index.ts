@@ -95,7 +95,10 @@ export function createConfiguration(src: {
     if (key in boolMemo === false) {
       const raw = expandValue(source, key);
       boolMemo[key] = {
-        value: raw === undefined ? undefined : validBooleanStrings[raw],
+        value:
+          raw === undefined
+            ? undefined
+            : validBooleanStrings[raw.toLowerCase()],
         raw
       };
     }
@@ -161,6 +164,9 @@ export class InvalidBase64ConfigurationError extends Error {
 
 // this handles transparent file and base64 encoded values.
 // this needs a cache.
+// also, note that the linked files must be ABSOLUTE paths, or relative to
+// the current working directory. This is tricky in practice so @proc/runtime
+// takes care of it for you with dotenv.
 const valueCache = new Map<string, string>();
 function expandValue(
   src: { [k: string]: string },

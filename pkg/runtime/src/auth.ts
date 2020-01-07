@@ -4,6 +4,7 @@ import { anonymousAuthn, Authn } from "@proc/context-auth";
 import { getRequestContext } from "@proc/context-koa";
 import { JWKS, JWT } from "jose";
 import { Middleware } from "koa";
+import { Context } from "koa";
 import { BaseContext } from "./";
 const { sign, verify } = JWT;
 
@@ -14,13 +15,16 @@ export {
   systemAuthn
 } from "@proc/context-auth";
 
-export function createVerifier(ctx: BaseContext) {
+export function createVerifier(
+  ctx: BaseContext,
+  options: JWT.VerifyOptions<false>
+) {
   // NB has no default, it will throw if you try and do it with no AUTHN_JWKS env
   const jwks = JWKS.asKeyStore(JSON.parse(ctx.config.getString("AUTHN_JWKS")));
   // this doesn't need to be async, but making it so now, prevents any problems
   // later...
   return async (tok: string): Promise<Authn> => {
-    const claims = verify(tok, jwks);
+    const claims = verify(tok, jwks, options);
     // Now we do our own validation and return the Authn object.
     // Or reject, we will treat a bad authentication header (if present at all)
     // as `anonymous`. Then the app can decide to throw a 401 if needed
@@ -49,35 +53,35 @@ export function createSigner(ctx: BaseContext) {
   }
   // this doesn't need to be async, but making it so now, prevents any problems
   // later...
-  return async (authn: Authn, options: JWTOptions = {}): Promise<string> => {
+  return async (
+    authn: Authn,
+    options: JWTOptions = {},
+    signOptions?: JWT.SignOptions
+  ): Promise<string> => {
     const payload = Object.assign({}, options, authn.toClaims());
-    const tok = sign(payload, key);
+    const tok = sign(payload, key, signOptions);
     return tok;
   };
 }
 
-export function createAuthnMiddleware(c: BaseContext): Middleware {
-  const verifier = createVerifier(c);
+export function createAuthnMiddleware<Ctx extends BaseContext = BaseContext>(
+  c: Ctx,
+  locator: TokenLocator<Ctx>,
+  verificationOptions: JWT.VerifyOptions<false> = {}
+): Middleware {
+  const verifier = createVerifier(c, verificationOptions);
   // allowed to be empty, in which case we don't check there.
   // header trumps cookie.
-  const cookieName = c.config.getString("AUTHN_COOKIE_NAME", "");
   return async (ktx, next) => {
-    const ctx = getRequestContext<BaseContext>(ktx);
+    const ctx = getRequestContext<Ctx>(ktx);
     // check for authn headers and attach the authn to the context.
     // get header Bearer <jwt>
     // we are going to allow the jwt in the authorization header
     // or in a cookie.
-    let tok: string = "";
-    const header = ktx.get("authorization");
-    if (header && header.startsWith("Bearer ")) {
-      tok = header.slice(7);
-      ctx.log.trace({ token: tok }, "authn token in header");
-    } else if (cookieName) {
-      const cookie = ktx.cookies.get(cookieName);
-      if (cookie) {
-        tok = cookie;
-        ctx.log.trace({ token: tok }, "authn token in cookie");
-      }
+    let tok = locator(ctx, ktx);
+    // wait if we have to.
+    if (tok && typeof tok === "object") {
+      tok = await tok;
     }
     // if we even have a token now, we must verify it.
     let authn: Authn;
@@ -99,3 +103,27 @@ export function createAuthnMiddleware(c: BaseContext): Middleware {
     return next();
   };
 }
+
+// find a token for authentication (or return null)
+export type TokenLocator<Ctx extends BaseContext = BaseContext> = (
+  ctx: Ctx,
+  ktx: Context
+) => string | null | Promise<string | null>;
+
+export const cookieTokenLocator: (
+  cookieName: string
+) => TokenLocator = cookieName => (ctx, ktx) => {
+  const cookie = ktx.cookies.get(cookieName);
+  if (cookie) {
+    return cookie;
+  }
+  return null;
+};
+
+export const authorizationHeaderLocator: TokenLocator = (ctx, ktx) => {
+  const header = ktx.get("authorization");
+  if (header && header.startsWith("Bearer ")) {
+    return header.slice(7);
+  }
+  return null;
+};

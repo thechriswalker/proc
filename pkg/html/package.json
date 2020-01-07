@@ -12,20 +12,18 @@
   "scripts": {
     "prepublishOnly": "yarn run build",
     "test": "jest --config ../../jest.config.js --passWithNoTests",
-    "build": "tsc"
+    "build": "tsc --build",
+    "clean": "rm -rf ./dist ./tsconfig.tsbuildinfo"
   },
   "dependencies": {
-    "@types/react": "16.9.9",
-    "@types/react-dom": "16.9.2",
-    "hyperx": "^2.5.4",
-    "react": "^16.10.2",
-    "react-dom": "^16.10.2"
+    "hyperx": "^2.5.4"
   },
   "devDependencies": {
-    "@types/jest": "^24.0.19",
+    "@types/jest": "^24.0.25",
+    "@types/node": "^13.1.4",
     "jest": "^24.8.0",
-    "ts-jest": "^24.0.2",
-    "typescript": "^3.6.4"
+    "ts-jest": "^24.3.0",
+    "typescript": "^3.7.4"
   },
   "publishConfig": {
     "access": "public"
