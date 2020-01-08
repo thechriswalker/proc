@@ -1,6 +1,6 @@
 {
   "name": "@proc/context",
-  "version": "0.1.36",
+  "version": "0.2.0",
   "description": "A Hierachical Application Context",
   "main": "dist/index",
   "types": "dist/index.d.ts",

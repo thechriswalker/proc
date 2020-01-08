@@ -1,7 +1,7 @@
 {
   "name": "@proc/graphql",
   "description": "GraphQL Server, Tools and Scalars",
-  "version": "0.1.35",
+  "version": "0.2.0",
   "main": "dist/index",
   "types": "dist/index.d.ts",
   "files": [

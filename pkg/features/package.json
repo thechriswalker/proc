@@ -1,6 +1,6 @@
 {
   "name": "@proc/features",
-  "version": "0.1.36",
+  "version": "0.2.0",
   "description": "A feature flag system for @proc/runtime",
   "main": "dist/index",
   "types": "dist/index.d.ts",
@@ -21,7 +21,7 @@
   "devDependencies": {
     "@proc/context-db": "^0.1.35",
     "@proc/context-redis": "^0.1.35",
-    "@proc/runtime": "^0.1.36",
+    "@proc/runtime": "^0.2.0",
     "@proc/sql": "^0.1.35",
     "@types/dotenv": "^8.2.0",
     "@types/koa": "^2.11.0",
@@ -29,9 +29,9 @@
     "typescript": "^3.7.4"
   },
   "optionalDependencies": {
-    "@proc/context-db": "^0.1.36",
-    "@proc/context-redis": "^0.1.36",
-    "@proc/sql": "^0.1.35"
+    "@proc/context-db": "^0.2.0",
+    "@proc/context-redis": "^0.2.0",
+    "@proc/sql": "^0.2.0"
   },
   "publishConfig": {
     "access": "public"

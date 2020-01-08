@@ -1,6 +1,6 @@
 {
   "name": "@proc/runtime",
-  "version": "0.1.36",
+  "version": "0.2.0",
   "description": "An koa web-app runtime for @proc/context",
   "main": "dist/index",
   "types": "dist/index.d.ts",
@@ -16,11 +16,11 @@
     "clean": "rm -rf ./dist ./tsconfig.tsbuildinfo"
   },
   "dependencies": {
-    "@proc/configuration": "^0.1.35",
-    "@proc/context": "^0.1.36",
-    "@proc/context-auth": "^0.1.36",
-    "@proc/context-koa": "^0.1.36",
-    "@proc/context-pino": "^0.1.36",
+    "@proc/configuration": "^0.2.0",
+    "@proc/context": "^0.2.0",
+    "@proc/context-auth": "^0.2.0",
+    "@proc/context-koa": "^0.2.0",
+    "@proc/context-pino": "^0.2.0",
     "async-exit-hook": "^2.0.1",
     "cuid": "^2.1.8",
     "dotenv": "^8.2.0",

@@ -1,6 +1,6 @@
 {
   "name": "@proc/context-metrics",
-  "version": "0.1.36",
+  "version": "0.2.0",
   "description": "The main interface for Metrics using context",
   "main": "dist/index",
   "types": "dist/index.d.ts",
@@ -10,7 +10,7 @@
   "author": "Chris Walker <chris@thechriswalker.net",
   "license": "MIT",
   "devDependencies": {
-    "@proc/context": "^0.1.36",
+    "@proc/context": "^0.2.0",
     "@types/jest": "^24.0.25",
     "@types/node": "^13.1.4",
     "jest": "^24.8.0",

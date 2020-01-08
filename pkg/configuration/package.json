@@ -1,6 +1,6 @@
 {
   "name": "@proc/configuration",
-  "version": "0.1.35",
+  "version": "0.2.0",
   "description": "Configuration object.",
   "main": "dist/index",
   "types": "dist/index.d.ts",
