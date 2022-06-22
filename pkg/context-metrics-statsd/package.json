@@ -28,6 +28,6 @@
   },
   "dependencies": {
     "@proc/context-metrics": "^0.2.0",
-    "got": "^10.2.1"
+    "got": "^11.8.5"
   }
 }
